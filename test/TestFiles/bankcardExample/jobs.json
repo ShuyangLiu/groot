@@ -1,0 +1,11 @@
+[
+	{
+		"Domain": "www.bankcard.com.",
+		"SubDomain": false,
+		"Properties":[
+			{
+				"PropertyName": "DelegationConsistency"
+			}
+		]
+	}
+]

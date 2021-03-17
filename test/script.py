@@ -30,7 +30,9 @@ def parse(zonefile):
     return records
 
 def dump(name, zonefile, ns, metadata):
-    with open(save_dir+'/'+name+'.txt', mode='w') as f:
+    filename = name+'.txt'
+    abs_filename = os.path.join(save_dir, filename)
+    with open(abs_filename, mode='w') as f:
         f.write(zonefile)
         logger.debug("dump(): dumped to file "+name+'.txt')
     metadata['ZoneFiles'].append({'FileName':name+'.txt', 'NameServer':ns})

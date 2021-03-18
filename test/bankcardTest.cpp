@@ -20,13 +20,21 @@ BOOST_AUTO_TEST_CASE(bankcard_test)
     BOOST_TEST(22 == total_rrs_parsed);
     auto types_to_count = dt.GetTypeToCountMap(driver);
     BOOST_TEST(2 == types_to_count["DNAME"]);
+    BOOST_TEST(1 == types_to_count["CNAME"]);
+    BOOST_TEST(6 == types_to_count["A"]);
+    BOOST_TEST(6 == types_to_count["NS"]);
+    BOOST_TEST(5 == types_to_count["SOA"]);
+    BOOST_TEST(2 == types_to_count["AAAA"]);
 
     for (auto &user_job : j) {
         driver.SetJob(user_job);
         driver.GenerateECsAndCheckProperties();
     }
-    
-    BOOST_TEST(1 == dt.GetNumberofViolations(driver));
+
+    // We check for two properties: 1. Response Consistency
+    //                              2. whether support.mybankcard.com will always get the ip address 204.58.233.244
+    // Both of them should be violated
+    BOOST_TEST(2 == dt.GetNumberofViolations(driver));
 
 }
 

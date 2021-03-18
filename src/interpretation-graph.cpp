@@ -237,9 +237,9 @@ vector<tuple<ResourceRecord, vector<ResourceRecord>>> interpretation::Graph::Mat
                     break;
                 }
             }
-            if (matched.size()) {
+            //if (matched.size()) {
                 pairs.push_back(std::make_tuple(std::move(records[i]), std::move(matched)));
-            }
+            //}
         }
     }
     return pairs;

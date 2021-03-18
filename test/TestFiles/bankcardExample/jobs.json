@@ -1,14 +1,17 @@
 [
 	{
-		"Domain": "support.mybankcard.com.",
+		"Domain": "support.mybankcard.com",
 		"SubDomain": false,
 		"Properties":[
-
-			{
-				"PropertyName": "ResponseValue",
-				"Types": ["A"],
-				"Value": ["204.58.233.244"]
-			}
+				{
+					"PropertyName": "ResponseConsistency",
+					"Types": ["A"]
+				},
+				{
+					"PropertyName": "ResponseValue",
+					"Types": ["A"],
+					"Value": ["204.58.233.244"]
+				 }
 		]
 	}
 ]

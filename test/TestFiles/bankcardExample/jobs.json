@@ -7,5 +7,43 @@
 				"PropertyName": "DelegationConsistency"
 			}
 		]
+	},
+        {
+                "Domain": "support.mybankcard.com.",
+                "SubDomain": false,
+                "Properties":[
+                        {
+                                "PropertyName": "RewriteBlackholing"
+                        },
+						{
+							"PropertyName": "ResponseReturned",
+							"Types": ["A"]
+						}
+                ]
+        },
+        {
+		"Domain": "email.mybankcard.com.",
+		"SubDomain": false,
+		"Properties":[
+			{
+				"PropertyName": "ResponseReturned",
+				"Types": ["CNAME","A"]
+			},
+                        {
+				"PropertyName": "ResponseValue",
+				"Types": ["A"],
+				"Value": ["64.107.104.4"]
+			}
+		]
+	},
+        {
+		"Domain": "bankcard.com.",
+		"SubDomain": true,
+		"Properties":[
+			{
+				"PropertyName": "AllAliases",
+				"Value":["support.mybankcard.com."]
+			}
+		]
 	}
 ]

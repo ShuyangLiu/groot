@@ -74,7 +74,7 @@ interpretation::Graph::Graph(const EC query, const Context &context)
             fmt::format("interpretation-graph.cpp (Graph) - Unable to insert node into a interpretation graph"));
         std::exit(EXIT_FAILURE);
     }
-    // Logger->debug(fmt::format("interpretation-graph (Graph) Added the dummy node {}", query.ToString()));
+    Logger->debug(fmt::format("interpretation-graph (Graph) Added the dummy node {}", query.ToString()));
     StartFromTopNameservers(root_, query, context);
     // cout << "Interpretation: " << num_vertices(*this) << endl;
 }
@@ -84,27 +84,27 @@ void interpretation::Graph::CheckCnameDnameAtSameNameserver(
     const EC newQuery,
     const Context &context)
 {
-    // Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Query:{} New query:{}",
-    // (*this)[current_node].query.ToString(), newQuery.ToString())); Search for relevant zone at the same name server
+    Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Query:{} New query:{}",
+    (*this)[current_node].query.ToString(), newQuery.ToString())); //Search for relevant zone at the same name server
     // first
     auto [valid, violation_label] = LabelUtils::LengthCheck(newQuery.name, 0);
     if (valid) {
         boost::optional<int> start = GetRelevantZone((*this)[current_node].ns, newQuery, context);
         if (start) {
-            // Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Found relevant zone
-            // with id
-            // {}", start.get()));
+            Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Found relevant zone\
+            with id\
+            {}", start.get()));
             boost::optional<VertexDescriptor> node = InsertNode((*this)[current_node].ns, newQuery, current_node, {});
             // If there was no same query earlier to this NS then continue the querying process.
             if (node) {
-                // Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Inserted new node
-                // with vd {}", node.get()));
+                Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Inserted new node\
+                with vd {}", node.get()));
                 QueryResolver(context.zoneId_to_zone.find(start.get())->second, node.get(), context);
             }
         } else {
             // Start from the top Zone file
-            // Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Did not find a relevant
-            // zone"));
+            Logger->debug(fmt::format("interpretation-graph (CheckCnameDnameAtSameNameserver) Did not find a relevant\
+            zone"));
             StartFromTopNameservers(current_node, newQuery, context);
         }
     } else {
@@ -146,8 +146,8 @@ boost::optional<interpretation::Graph::VertexDescriptor> interpretation::Graph::
                     (*this)[e].intermediate_query = boost::make_optional(static_cast<int>(edge_query.get()));
                 }
                 //}
-                // Logger->debug(fmt::format("interpretation-graph (InsertNode) Found duplicate node in interpretation
-                // graph"));
+                Logger->debug(fmt::format("interpretation-graph (InsertNode) Found duplicate node in interpretation\
+                graph"));
                 return {};
             }
         }
@@ -157,8 +157,8 @@ boost::optional<interpretation::Graph::VertexDescriptor> interpretation::Graph::
         VertexDescriptor v = boost::add_vertex(*this);
         (*this)[v].ns = ns;
         (*this)[v].query = query;
-        // Logger->debug(fmt::format("interpretation-graph (InsertNode) Added new node with id {} to interpretation
-        // graph - ns:{}, query:{}", v, (*this)[v].ns, (*this)[v].query.ToString()));
+        Logger->debug(fmt::format("interpretation-graph (InsertNode) Added new node with id {} to interpretation\
+        graph - ns:{}, query:{}", v, (*this)[v].ns, (*this)[v].query.ToString()));
         EdgeDescriptor e;
         bool b;
         boost::tie(e, b) = boost::add_edge(edge_start, v, *this);
@@ -183,8 +183,8 @@ boost::optional<int> interpretation::Graph::GetRelevantZone(string ns, const EC 
 {
     auto it = context.nameserver_zoneIds_map.find(ns);
     auto queryLabels = query.name;
-    // Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) TopNS {} queryLabels {}", ns,
-    // LabelUtils::LabelsToString(queryLabels)));
+    Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) TopNS {} queryLabels {}", ns,
+    LabelUtils::LabelsToString(queryLabels)));
     if (it != context.nameserver_zoneIds_map.end()) {
         bool found = false;
         int max = -1;
@@ -192,8 +192,8 @@ boost::optional<int> interpretation::Graph::GetRelevantZone(string ns, const EC 
         for (auto zid : it->second) {
             int i = 0;
             bool valid = true;
-            // Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) Searching zone with id {} and origin
-            // {}", zid, LabelUtils::LabelsToString(context.zoneId_to_zone.find(zid)->second.get_origin())));
+            Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) Searching zone with id {} and origin\
+            {}", zid, LabelUtils::LabelsToString(context.zoneId_to_zone.find(zid)->second.get_origin())));
             for (const NodeLabel &l : context.zoneId_to_zone.find(zid)->second.get_origin()) {
                 if (i >= queryLabels.size() || l.n != queryLabels[i].n) {
                     valid = false;
@@ -202,11 +202,11 @@ boost::optional<int> interpretation::Graph::GetRelevantZone(string ns, const EC 
                 i++;
             }
             if (valid) {
-                // Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) Found valid one with id {}", zid));
+                Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) Found valid one with id {}", zid));
                 found = true;
                 if (i > max) {
-                    // Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) Best match updated from  {} to
-                    // {}", bestMatch, zid));
+                    Logger->debug(fmt::format("interpretation-graph (GetRelevantZone) Best match updated from  {} to\
+                    {}", bestMatch, zid));
                     max = i;
                     bestMatch = zid;
                 }
@@ -343,8 +343,8 @@ void interpretation::Graph::QueryResolver(
     VertexDescriptor &current_vertex,
     const Context &context)
 {
-    // Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with origin-{}",
-    // (*this)[current_vertex].query.ToString(), LabelUtils::LabelsToString(z.get_origin())));
+    Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with origin-{}",
+    (*this)[current_vertex].query.ToString(), LabelUtils::LabelsToString(z.get_origin())));
     bool complete_match = false;
     (*this)[current_vertex].answer = z.QueryLookUpAtZone((*this)[current_vertex].query, complete_match);
     if ((*this)[current_vertex].answer) {
@@ -361,16 +361,16 @@ void interpretation::Graph::QueryResolver(
                     // It will always be of size 1
                     // CNAME Case
                     if (record.get_type() == RRType::CNAME) {
-                        // Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with
-                        // origin-{} returned a CNAME record", (*this)[current_vertex].query.ToString(),
-                        // LabelUtils::LabelsToString(z.get_origin())));
+                        Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with\
+                        origin-{} returned a CNAME record", (*this)[current_vertex].query.ToString(),
+                        LabelUtils::LabelsToString(z.get_origin())));
                         EC new_query = ProcessCname(record, (*this)[current_vertex].query);
                         CheckCnameDnameAtSameNameserver(current_vertex, new_query, context);
                     } else {
                         // DNAME Case
-                        // Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with
-                        // origin-{} returned a DNAME record", (*this)[current_vertex].query.ToString(),
-                        // LabelUtils::LabelsToString(z.get_origin())));
+                        Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with\
+                        origin-{} returned a DNAME record", (*this)[current_vertex].query.ToString(),
+                        LabelUtils::LabelsToString(z.get_origin())));
                         EC new_query = ProcessDname(record, (*this)[current_vertex].query);
                         CheckCnameDnameAtSameNameserver(current_vertex, new_query, context);
                     }
@@ -401,16 +401,16 @@ void interpretation::Graph::QueryResolver(
             }
         } else {
             // No records found - NXDOMAIN. The current path terminates.
-            // Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with origin-{}
-            // returned empty answer (NX)", (*this)[current_vertex].query.ToString(),
-            // LabelUtils::LabelsToString(z.get_origin())));
+            Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with origin-{}\
+            returned empty answer (NX)", (*this)[current_vertex].query.ToString(),
+            LabelUtils::LabelsToString(z.get_origin())));
         }
     } else {
         // This path terminates - On the assumption that you would have come to this NS by some referrral and if the
         // referral is wrong then the path should terminate.
-        // Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with origin-{}
-        // returned null answer", (*this)[current_vertex].query.ToString(),
-        // LabelUtils::LabelsToString(z.get_origin())));
+        Logger->debug(fmt::format("interpretation-graph (QueryResolver) Query:{} look up at zone with origin-{}\
+        returned null answer", (*this)[current_vertex].query.ToString(),
+        LabelUtils::LabelsToString(z.get_origin())));
     }
 }
 
@@ -450,21 +450,21 @@ void interpretation::Graph::StartFromTopNameservers(
 {
     for (string ns : context.top_nameservers) {
         // ns exists in the database.
-        // Logger->debug(fmt::format("interpretation-graph (StartFromTopNameservers) Starting with TopNS {} for {}", ns,
-        // query.ToString()));
+        Logger->debug(fmt::format("interpretation-graph (StartFromTopNameservers) Starting with TopNS {} for {}", ns,
+        query.ToString()));
         boost::optional<int> start = GetRelevantZone(ns, query, context);
         boost::optional<VertexDescriptor> node = InsertNode(ns, query, edge_start_node, {});
         if (start && node) {
-            // Logger->debug(fmt::format("interpretation-graph (StartFromTopNameservers) Before calling
-            // QueryResolver"));
+            Logger->debug(fmt::format("interpretation-graph (StartFromTopNameservers) Before calling\
+            QueryResolver"));
             QueryResolver(context.zoneId_to_zone.find(start.get())->second, node.get(), context);
         } else if (node && !start) {
             vector<zone::LookUpAnswer> answer;
             answer.push_back(
                 std::make_tuple(ReturnTag::REFUSED, (*this)[node.get()].query.rrTypes, vector<ResourceRecord>{}));
             (*this)[node.get()].answer = answer;
-            // Logger->debug(fmt::format("interpretation-graph (StartFromTopNameservers) No relevant zone found and
-            // answer is updated to REFUSED"));
+            Logger->debug(fmt::format("interpretation-graph (StartFromTopNameservers) No relevant zone found and\
+            answer is updated to REFUSED"));
         }
     }
 }
